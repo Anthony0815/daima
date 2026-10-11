@@ -42,10 +42,16 @@ services:
         value: "20"
       - key: CALCULUS_QUOTA_GLOBAL_DAILY
         value: "500"
+      # 每账号每分钟请求数：页面加载/切换会话本身就会发几个请求，6 太紧，用代码默认值 30
       - key: CALCULUS_RATE_USER_PER_MIN
-        value: "6"
+        value: "30"
+      # 每 IP 每分钟请求数：同学在同一个校园网/机房时出口 IP 相同，
+      # 原值 20 会被一次页面加载（3~4 个请求）迅速打满，导致全班被限流。
       - key: CALCULUS_RATE_IP_PER_MIN
-        value: "20"
+        value: "240"
+      # 每 IP 注册频率：默认 8，一个班同时注册会被卡；放宽到 30
+      - key: CALCULUS_RATE_REGISTER_PER_MIN
+        value: "30"
       - key: CALCULUS_MAX_CONCURRENT
         value: "32"
       - key: CALCULUS_MAX_BODY

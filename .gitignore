@@ -23,3 +23,6 @@ cloudflared.exe
 # 编辑器
 .vscode/
 .idea/
+
+# 打包产物（本地完整包内含密钥，绝不提交）
+*.zip

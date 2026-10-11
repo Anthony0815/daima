@@ -1,0 +1,19 @@
+# 构建镜像时排除的东西 —— 尤其是 llm.env，绝不能进镜像
+llm.env
+.env
+.env.*
+
+data/
+*.db
+*.db-wal
+*.db-shm
+
+.git/
+.gitignore
+tests/
+README.md
+
+__pycache__/
+*.pyc
+
+tmp_*

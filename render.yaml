@@ -1,0 +1,56 @@
+# Render 一键部署配置（把仓库连上 Render 后会自动识别本文件）
+#
+# 部署前请在 Render 控制台的 Environment 里填两个 sync:false 的变量：
+#   CALCULUS_LLM_API_KEY   DeepSeek 密钥
+#   CALCULUS_ADMIN_PASSWORD 管理员初始密码（不填会随机生成并打印在日志里）
+#
+# ⚠️ 免费层没有持久磁盘：/data 会在每次重新部署/休眠唤醒后清空，
+#    账号与成绩会丢失。要保住数据需升级到支持 Disks 的付费计划，
+#    或者换 Railway / Fly.io 挂载卷。
+
+services:
+  - type: web
+    name: calculus-exam
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      # ---- 大模型 ----
+      - key: CALCULUS_LLM_BASE_URL
+        value: https://api.deepseek.com
+      - key: CALCULUS_LLM_MODEL
+        value: deepseek-flash
+      # 平时关闭思考模式，界面上的「深度思考」开关才启用
+      - key: CALCULUS_LLM_THINKING
+        value: deep_think
+      - key: CALCULUS_LLM_STREAM
+        value: "1"
+      - key: CALCULUS_LLM_API_KEY
+        sync: false          # 在控制台填写，不写进仓库
+
+      # ---- 安全 ----
+      - key: CALCULUS_ADMIN_PASSWORD
+        sync: false          # 强烈建议填写
+      # 在反向代理后面，从 X-Forwarded-For 取真实客户端 IP
+      - key: CALCULUS_TRUST_PROXY
+        value: "1"
+
+      # ---- 费用护栏（务必保留）----
+      - key: CALCULUS_QUOTA_USER_DAILY
+        value: "20"
+      - key: CALCULUS_QUOTA_GLOBAL_DAILY
+        value: "500"
+      - key: CALCULUS_RATE_USER_PER_MIN
+        value: "6"
+      - key: CALCULUS_RATE_IP_PER_MIN
+        value: "20"
+      - key: CALCULUS_MAX_CONCURRENT
+        value: "32"
+      - key: CALCULUS_MAX_BODY
+        value: "65536"
+
+      # ---- 数据 ----
+      - key: CALCULUS_DB
+        value: /data/app.db
